@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: ai-no-code-generator-backend
+server:
+  port: 8123
+  servlet:
+    context-path: /api
