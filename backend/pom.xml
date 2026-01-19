@@ -32,6 +32,9 @@
         <hutool.version>5.8.38</hutool.version>
         <mybtais-flex.version>1.11.0</mybtais-flex.version>
         <mysql.version>8.0.33</mysql.version>
+        <langchain4j.version>1.1.0</langchain4j.version>
+        <langchain4j.open.ai.version>1.1.0-beta7</langchain4j.open.ai.version>
+        <langchain4j.reactor.version>1.1.0-beta7</langchain4j.reactor.version>
     </properties>
     <dependencies>
         <dependency>
@@ -83,6 +86,23 @@
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
         </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j</artifactId>
+            <version>${langchain4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-open-ai-spring-boot-starter</artifactId>
+            <version>${langchain4j.open.ai.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-reactor</artifactId>
+            <version>${langchain4j.reactor.version}</version>
+        </dependency>
+
+
 
     </dependencies>
 
