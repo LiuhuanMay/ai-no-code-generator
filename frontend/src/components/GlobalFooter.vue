@@ -3,7 +3,7 @@
     <div class="footer-content">
       <p class="copyright">
         <a
-          href="https://github.com/LiuhuanMay"
+          href="https://www.codefather.cn"
           target="_blank"
           rel="noopener noreferrer"
           class="author-link"
