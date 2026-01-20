@@ -1,6 +1,6 @@
 package com.liuhuan.backend.service;
 
-import com.liuhuan.backend.model.dto.UserQueryRequest;
+import com.liuhuan.backend.model.dto.user.UserQueryRequest;
 import com.liuhuan.backend.model.entity.User;
 import com.liuhuan.backend.model.vo.LoginUserVO;
 import com.liuhuan.backend.model.vo.UserVO;

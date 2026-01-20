@@ -1,4 +1,4 @@
-package com.liuhuan.backend.model.dto;
+package com.liuhuan.backend.model.dto.user;
 
 import lombok.Data;
 
@@ -6,10 +6,10 @@ import java.io.Serializable;
 
 /**
  * @author L_H
- * @since 2026-01-19 13:50:55
+ * @since 2026-01-19 13:55:57
  */
 @Data
-public class UserRegisterRequest implements Serializable {
+public class UserLoginRequest implements Serializable {
 
     private static final long serialVersionUID = 3191241716373120793L;
 
@@ -22,10 +22,5 @@ public class UserRegisterRequest implements Serializable {
      * 密码
      */
     private String userPassword;
-
-    /**
-     * 确认密码
-     */
-    private String checkPassword;
 }
 

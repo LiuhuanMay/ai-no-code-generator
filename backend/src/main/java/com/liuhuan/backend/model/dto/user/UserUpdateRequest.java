@@ -1,18 +1,15 @@
-package com.liuhuan.backend.model.dto;
+package com.liuhuan.backend.model.dto.user;
 
-import com.liuhuan.backend.common.PageRequest;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 
 /**
  * @author L_H
- * @since 2026-01-19 14:17:59
+ * @since 2026-01-19 14:17:24
  */
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class UserQueryRequest extends PageRequest implements Serializable {
+public class UserUpdateRequest implements Serializable {
 
     /**
      * id
@@ -25,9 +22,9 @@ public class UserQueryRequest extends PageRequest implements Serializable {
     private String userName;
 
     /**
-     * 账号
+     * 用户头像
      */
-    private String userAccount;
+    private String userAvatar;
 
     /**
      * 简介
@@ -35,7 +32,7 @@ public class UserQueryRequest extends PageRequest implements Serializable {
     private String userProfile;
 
     /**
-     * 用户角色：user/admin/ban
+     * 用户角色：user/admin
      */
     private String userRole;
 

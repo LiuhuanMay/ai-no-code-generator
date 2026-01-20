@@ -9,7 +9,7 @@ import com.liuhuan.backend.common.ResultUtils;
 import com.liuhuan.backend.constant.UserConstant;
 import com.liuhuan.backend.exception.BusinessException;
 import com.liuhuan.backend.exception.ThrowUtils;
-import com.liuhuan.backend.model.dto.*;
+import com.liuhuan.backend.model.dto.user.*;
 import com.liuhuan.backend.model.entity.User;
 import com.liuhuan.backend.model.vo.LoginUserVO;
 import com.liuhuan.backend.model.vo.UserVO;

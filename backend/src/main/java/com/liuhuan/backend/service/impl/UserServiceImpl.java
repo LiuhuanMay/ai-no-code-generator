@@ -6,7 +6,7 @@ import cn.hutool.core.util.StrUtil;
 import com.liuhuan.backend.common.ErrorCode;
 import com.liuhuan.backend.exception.BusinessException;
 import com.liuhuan.backend.mapper.UserMapper;
-import com.liuhuan.backend.model.dto.UserQueryRequest;
+import com.liuhuan.backend.model.dto.user.UserQueryRequest;
 import com.liuhuan.backend.model.entity.User;
 import com.liuhuan.backend.model.enums.UserRoleEnum;
 import com.liuhuan.backend.model.vo.LoginUserVO;
