@@ -4,7 +4,6 @@ package com.liuhuan.backend.core.parser;
 import com.liuhuan.backend.ai.model.enums.CodeGenTypeEnum;
 import com.liuhuan.backend.common.ErrorCode;
 import com.liuhuan.backend.exception.BusinessException;
-import org.aspectj.apache.bcel.classfile.Code;
 
 /**
  * @author L_H

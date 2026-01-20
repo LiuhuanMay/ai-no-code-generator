@@ -1,7 +1,7 @@
 package com.liuhuan.backend.mapper;
 
-import com.mybatisflex.core.BaseMapper;
 import com.liuhuan.backend.model.entity.User;
+import com.mybatisflex.core.BaseMapper;
 
 /**
  *

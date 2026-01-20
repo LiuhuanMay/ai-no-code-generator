@@ -1,19 +1,14 @@
 package com.liuhuan.backend.service;
 
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.collection.CollUtil;
 import com.liuhuan.backend.model.dto.UserQueryRequest;
+import com.liuhuan.backend.model.entity.User;
 import com.liuhuan.backend.model.vo.LoginUserVO;
 import com.liuhuan.backend.model.vo.UserVO;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.service.IService;
-import com.liuhuan.backend.model.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.util.DigestUtils;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 用户 服务层。
