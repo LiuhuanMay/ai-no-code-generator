@@ -65,7 +65,9 @@ public abstract class CodeFileSaverTemplate<T> {
         boolean b = StrUtil.isBlank(filename);
         if (!StrUtil.isBlank(filename)) {
             String filePath = dirPath + File.separator + filename;
-            FileUtil.writeString(content, filePath, StandardCharsets.UTF_8);
+            if (content != null) {
+                FileUtil.writeString(content, filePath, StandardCharsets.UTF_8);
+            }
         }
 
     }
