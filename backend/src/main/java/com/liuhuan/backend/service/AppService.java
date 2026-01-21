@@ -13,6 +13,7 @@ import com.mybatisflex.core.service.IService;
 import com.liuhuan.backend.model.entity.App;
 import reactor.core.publisher.Flux;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -66,5 +67,13 @@ public interface AppService extends IService<App> {
      * @return 项目部署之后的地址
      */
     String deployApp(Long appId, User loginUser);
+
+    /**
+     * 删除应用时，关联删除对话历史
+     *
+     * @param id
+     * @return
+     */
+    boolean removeById(Serializable id);
 }
 
