@@ -1,10 +1,12 @@
 package com.liuhuan.backend.service;
 
 import com.liuhuan.backend.model.dto.app.AppQueryRequest;
+import com.liuhuan.backend.model.entity.User;
 import com.liuhuan.backend.model.vo.AppVO;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.service.IService;
 import com.liuhuan.backend.model.entity.App;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 
@@ -15,6 +17,16 @@ import java.util.List;
  * @since 2026-01-20 17:01:29
  */
 public interface AppService extends IService<App> {
+
+    /**
+     * 通过对话生成应用代码
+     *
+     * @param appId 应用 ID
+     * @param message 提示词
+     * @param loginUser 登录用户
+     * @return
+     */
+    Flux<String> chatToGenCode(Long appId, String message, User loginUser);
 
     /**
      * 获取应用封装类
