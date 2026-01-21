@@ -35,6 +35,7 @@
         <langchain4j.version>1.1.0</langchain4j.version>
         <langchain4j.open.ai.version>1.1.0-beta7</langchain4j.open.ai.version>
         <langchain4j.reactor.version>1.1.0-beta7</langchain4j.reactor.version>
+        <langchain4j-community-redis.version>1.1.0-beta7</langchain4j-community-redis.version>
     </properties>
     <dependencies>
         <dependency>
@@ -100,6 +101,15 @@
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-reactor</artifactId>
             <version>${langchain4j.reactor.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-community-redis-spring-boot-starter</artifactId>
+            <version>${langchain4j-community-redis.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
         </dependency>
 
 

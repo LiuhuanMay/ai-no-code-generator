@@ -2,7 +2,9 @@ package com.liuhuan.backend.ai;
 
 import com.liuhuan.backend.ai.model.HtmlCodeResult;
 import com.liuhuan.backend.ai.model.MultiFileCodeResult;
+import dev.langchain4j.service.MemoryId;
 import dev.langchain4j.service.SystemMessage;
+import dev.langchain4j.service.UserMessage;
 import reactor.core.publisher.Flux;
 
 /**
