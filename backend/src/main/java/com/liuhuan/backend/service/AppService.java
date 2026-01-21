@@ -1,5 +1,10 @@
 package com.liuhuan.backend.service;
 
+import cn.hutool.core.util.StrUtil;
+import com.liuhuan.backend.ai.model.enums.CodeGenTypeEnum;
+import com.liuhuan.backend.common.ErrorCode;
+import com.liuhuan.backend.exception.BusinessException;
+import com.liuhuan.backend.exception.ThrowUtils;
 import com.liuhuan.backend.model.dto.app.AppQueryRequest;
 import com.liuhuan.backend.model.entity.User;
 import com.liuhuan.backend.model.vo.AppVO;
@@ -52,5 +57,14 @@ public interface AppService extends IService<App> {
      */
     QueryWrapper getQueryWrapper(AppQueryRequest appQueryRequest);
 
+
+    /**
+     * 项目部署
+     *
+     * @param appId
+     * @param loginUser
+     * @return 项目部署之后的地址
+     */
+    String deployApp(Long appId, User loginUser);
 }
 
