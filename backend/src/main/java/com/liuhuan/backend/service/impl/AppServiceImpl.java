@@ -9,6 +9,7 @@ import com.liuhuan.backend.ai.model.enums.CodeGenTypeEnum;
 import com.liuhuan.backend.common.ErrorCode;
 import com.liuhuan.backend.constant.AppConstant;
 import com.liuhuan.backend.core.AiCodeGeneratorFacade;
+import com.liuhuan.backend.core.handler.StreamHandlerExecutor;
 import com.liuhuan.backend.exception.BusinessException;
 import com.liuhuan.backend.exception.ThrowUtils;
 import com.liuhuan.backend.mapper.AppMapper;
@@ -55,6 +56,8 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
 
     private final ChatHistoryService chatHistoryService;
 
+    private final StreamHandlerExecutor streamHandlerExecutor;
+
     @Override
     public Flux<String> chatToGenCode(Long appId, String message, User loginUser) {
         // 1. 参数校验
@@ -78,20 +81,7 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
         // 6. 调用 AI 生成代码（流式）
         Flux<String> contentFlux = aiCodeGeneratorFacade.generateAndSaveCodeStream(message, codeGenTypeEnum, appId);
         // 7. 收集 AI 响应的内容，并且在完成后保存记录到对话历史
-        StringBuilder aiResponseBuilder = new StringBuilder();
-        return contentFlux.map(chunk -> {
-            // 实时收集 AI 响应的内容
-            aiResponseBuilder.append(chunk);
-            return chunk;
-        }).doOnComplete(() -> {
-            // 流式返回完成后，保存 AI 消息到对话历史中
-            String aiResponse = aiResponseBuilder.toString();
-            chatHistoryService.addChatMessage(appId, aiResponse, ChatHistoryMessageTypeEnum.AI.getValue(), loginUser.getId());
-        }).doOnError(error -> {
-            // 如果 AI 回复失败，也需要保存记录到数据库中
-            String errorMessage = "AI 回复失败：" + error.getMessage();
-            chatHistoryService.addChatMessage(appId, errorMessage, ChatHistoryMessageTypeEnum.AI.getValue(), loginUser.getId());
-        });
+       return streamHandlerExecutor.doExecute(contentFlux,chatHistoryService,appId,loginUser,codeGenTypeEnum);
     }
 
     @Override
