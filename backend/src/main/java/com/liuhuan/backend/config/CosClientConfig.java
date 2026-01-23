@@ -21,6 +21,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class CosClientConfig {
 
     /**
+     *域名
+     */
+    private String host;
+
+    /**
      * accessKey
      */
     private String accessKey;

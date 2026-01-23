@@ -20,11 +20,13 @@ import com.liuhuan.backend.model.enums.ChatHistoryMessageTypeEnum;
 import com.liuhuan.backend.model.vo.AppVO;
 import com.liuhuan.backend.model.vo.UserVO;
 import com.liuhuan.backend.service.ChatHistoryService;
+import com.liuhuan.backend.service.ScreenshotService;
 import com.liuhuan.backend.service.UserService;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.liuhuan.backend.model.entity.App;
 import com.liuhuan.backend.service.AppService;
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -60,6 +62,8 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
     private final StreamHandlerExecutor streamHandlerExecutor;
 
     private final VueProjectBuilder vueProjectBuilder;
+
+    private final ScreenshotService screenshotService;
 
     @Override
     public Flux<String> chatToGenCode(Long appId, String message, User loginUser) {
@@ -203,17 +207,13 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
         updateApp.setDeployedTime(LocalDateTime.now());
         boolean updateResult = this.updateById(updateApp);
         ThrowUtils.throwIf(!updateResult, ErrorCode.OPERATION_ERROR, "更新应用部署信息失败");
-        // 10. 返回可访问的 URL 地址
-        return String.format("%s/%s", AppConstant.CODE_DEPLOY_HOST, deployKey);
+        // 10. 构建应用访问url
+        String appDeployUrl = String.format("%s/%s", AppConstant.CODE_DEPLOY_HOST, deployKey);
+        // 11 . 异步生成截图并更新应用封面
+        generateAppScreenshotAsync(appId, appDeployUrl);
+        return appDeployUrl;
     }
 
-
-    /**
-     * 删除应用时，关联删除对话历史
-     *
-     * @param id
-     * @return
-     */
     @Override
     public boolean removeById(Serializable id) {
         if (id == null) {
@@ -232,6 +232,22 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
         // 删除应用
         return super.removeById(id);
     }
+
+    @Override
+    public void generateAppScreenshotAsync(Long appId, String appUrl) {
+        // 使用虚拟线程异步执行
+        Thread.startVirtualThread(() -> {
+            // 调用截图服务生成截图并上传
+            String screenshotUrl = screenshotService.generateAndUploadScreenshot(appUrl);
+            // 更新应用封面字段
+            App updateApp = new App();
+            updateApp.setId(appId);
+            updateApp.setCover(screenshotUrl);
+            boolean updated = this.updateById(updateApp);
+            ThrowUtils.throwIf(!updated, ErrorCode.OPERATION_ERROR, "更新应用封面字段失败");
+        });
+    }
+
 
 }
 

@@ -6,6 +6,8 @@ import lombok.Locked;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.File;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -21,6 +23,7 @@ class CosManagerTest {
 
     @Test
     void putObject() {
-        PutObjectResult test = cosManager.putObject("test.png", "F:\\WorkSpace\\ai-no-code-generator\\backend\\tmp\\screenshots\\9d047539\\17785_compressed.jpg");
+        File file = new File("F:\\\\WorkSpace\\\\ai-no-code-generator\\\\backend\\\\tmp\\\\screenshots\\\\9d047539\\\\17785_compressed.jpg\"");
+        PutObjectResult test = cosManager.putObject("test.png", file);
     }
 }
