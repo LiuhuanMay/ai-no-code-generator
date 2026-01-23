@@ -38,6 +38,7 @@
         <langchain4j-community-redis.version>1.1.0-beta7</langchain4j-community-redis.version>
         <selenium.version>4.33.0</selenium.version>
         <webdriver.version>6.1.0</webdriver.version>
+        <cos.verison>5.6.89</cos.verison>
     </properties>
     <dependencies>
         <dependency>
@@ -129,7 +130,12 @@
             <artifactId>webdrivermanager</artifactId>
             <version>${webdriver.version}</version>
         </dependency>
-
+        <!--对象存储-->
+        <dependency>
+            <groupId>com.qcloud</groupId>
+            <artifactId>cos_api</artifactId>
+            <version>${cos.verison}</version>
+        </dependency>
     </dependencies>
 
     <build>
