@@ -36,6 +36,8 @@
         <langchain4j.open.ai.version>1.1.0-beta7</langchain4j.open.ai.version>
         <langchain4j.reactor.version>1.1.0-beta7</langchain4j.reactor.version>
         <langchain4j-community-redis.version>1.1.0-beta7</langchain4j-community-redis.version>
+        <selenium.version>4.33.0</selenium.version>
+        <webdriver.version>6.1.0</webdriver.version>
     </properties>
     <dependencies>
         <dependency>
@@ -116,6 +118,18 @@
             <groupId>org.springframework.session</groupId>
             <artifactId>spring-session-data-redis</artifactId>
         </dependency>
+        <!-- Selenium 网页截图依赖 -->
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>${selenium.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.bonigarcia</groupId>
+            <artifactId>webdrivermanager</artifactId>
+            <version>${webdriver.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>
