@@ -22,9 +22,6 @@ public class HtmlCodeParser implements CodeParser {
         String htmlCode = extractHtmlCode(codeContent);
         if (htmlCode != null && !htmlCode.trim().isEmpty()) {
             result.setHtmlCode(htmlCode.trim());
-        } else {
-            // 如果没有找到代码块，将整个内容作为HTML
-            result.setHtmlCode(codeContent.trim());
         }
         return result;
     }
