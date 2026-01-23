@@ -5,15 +5,19 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
+import com.liuhuan.backend.ai.AiCodeGenTypeRoutingService;
+import com.liuhuan.backend.ai.AiCodeGenTypeRoutingServiceFactory;
 import com.liuhuan.backend.ai.model.enums.CodeGenTypeEnum;
 import com.liuhuan.backend.builder.VueProjectBuilder;
 import com.liuhuan.backend.common.ErrorCode;
+import com.liuhuan.backend.common.ResultUtils;
 import com.liuhuan.backend.constant.AppConstant;
 import com.liuhuan.backend.core.AiCodeGeneratorFacade;
 import com.liuhuan.backend.core.handler.StreamHandlerExecutor;
 import com.liuhuan.backend.exception.BusinessException;
 import com.liuhuan.backend.exception.ThrowUtils;
 import com.liuhuan.backend.mapper.AppMapper;
+import com.liuhuan.backend.model.dto.app.AppAddRequest;
 import com.liuhuan.backend.model.dto.app.AppQueryRequest;
 import com.liuhuan.backend.model.entity.User;
 import com.liuhuan.backend.model.enums.ChatHistoryMessageTypeEnum;
@@ -64,6 +68,28 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
     private final VueProjectBuilder vueProjectBuilder;
 
     private final ScreenshotService screenshotService;
+
+    private final AiCodeGenTypeRoutingService aiCodeGenTypeRoutingService;
+
+    @Override
+    public Long createApp(AppAddRequest appAddRequest, User loginUser) {
+        // 参数校验
+        String initPrompt = appAddRequest.getInitPrompt();
+        ThrowUtils.throwIf(StrUtil.isBlank(initPrompt), ErrorCode.PARAMS_ERROR, "初始化 prompt 不能为空");
+        //构造入库对象
+        App app = new App();
+        BeanUtil.copyProperties(appAddRequest, app);
+        app.setUserId(loginUser.getId());
+        // 应用名称暂时为 initPrompt 前 12 位
+        app.setAppName(initPrompt.substring(0, Math.min(initPrompt.length(), 12)));
+        // 使用AI智能选择代码生成类型
+        CodeGenTypeEnum codeGenTypeEnum = aiCodeGenTypeRoutingService.routeCodeGenType(initPrompt);
+        app.setCodeGenType(codeGenTypeEnum.getValue());
+        // 插入数据库
+        boolean result = this.save(app);
+        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
+        return app.getId();
+    }
 
     @Override
     public Flux<String> chatToGenCode(Long appId, String message, User loginUser) {

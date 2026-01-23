@@ -5,6 +5,7 @@ import com.liuhuan.backend.ai.model.enums.CodeGenTypeEnum;
 import com.liuhuan.backend.common.ErrorCode;
 import com.liuhuan.backend.exception.BusinessException;
 import com.liuhuan.backend.exception.ThrowUtils;
+import com.liuhuan.backend.model.dto.app.AppAddRequest;
 import com.liuhuan.backend.model.dto.app.AppQueryRequest;
 import com.liuhuan.backend.model.entity.User;
 import com.liuhuan.backend.model.vo.AppVO;
@@ -23,6 +24,17 @@ import java.util.List;
  * @since 2026-01-20 17:01:29
  */
 public interface AppService extends IService<App> {
+
+
+    /**
+     * 新增APP请求
+     *
+     * @param appAddRequest
+     * @param loginUser
+     * @return 新增APP的Id
+     */
+    Long createApp(AppAddRequest appAddRequest,User loginUser);
+
 
     /**
      * 通过对话生成应用代码
