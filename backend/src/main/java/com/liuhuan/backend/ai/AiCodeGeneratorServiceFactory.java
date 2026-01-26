@@ -4,6 +4,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.liuhuan.backend.ai.model.enums.CodeGenTypeEnum;
 import com.liuhuan.backend.ai.tools.FileWriteTool;
+import com.liuhuan.backend.ai.tools.ToolManager;
 import com.liuhuan.backend.common.ErrorCode;
 import com.liuhuan.backend.exception.BusinessException;
 import com.liuhuan.backend.service.ChatHistoryService;
@@ -36,6 +37,8 @@ public class AiCodeGeneratorServiceFactory {
     private final RedisChatMemoryStore redisChatMemoryStore;
 
     private final ChatHistoryService chatHistoryService;
+
+    private final ToolManager toolManager;
 
 
     @Bean
@@ -101,7 +104,7 @@ public class AiCodeGeneratorServiceFactory {
             case VUE_PROJECT -> AiServices.builder(AiCodeGeneratorService.class)
                     .streamingChatModel(streamingChatModel)
                     .chatMemoryProvider(memoryId -> chatMemory)
-                    .tools(new FileWriteTool())
+                    .tools(toolManager.getAllTools())
                     .hallucinatedToolNameStrategy(toolExecutionRequest -> ToolExecutionResultMessage.from(
                             toolExecutionRequest, "Error: there is no tool called " + toolExecutionRequest.name()
                     ))
