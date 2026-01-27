@@ -16,6 +16,8 @@ import com.liuhuan.backend.exception.ThrowUtils;
 import com.liuhuan.backend.model.dto.app.*;
 import com.liuhuan.backend.model.entity.User;
 import com.liuhuan.backend.model.vo.AppVO;
+import com.liuhuan.backend.ratelimiter.annotation.RateLimit;
+import com.liuhuan.backend.ratelimiter.enums.RateLimitType;
 import com.liuhuan.backend.service.ProjectDownloadService;
 import com.liuhuan.backend.service.UserService;
 import com.mybatisflex.core.paginate.Page;
@@ -58,8 +60,8 @@ public class AppController {
     private final ProjectDownloadService projectDownloadService;
 
 
-
     @GetMapping(value = "/chat/gen/code", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @RateLimit(limitType = RateLimitType.USER, rate = 5, rateInterval = 60, message = "AI 对话请求过于频繁，请稍后再试")
     public Flux<ServerSentEvent<String>> chatToGenCode(@RequestParam Long appId,
                                                        @RequestParam String message,
                                                        HttpServletRequest request) {
