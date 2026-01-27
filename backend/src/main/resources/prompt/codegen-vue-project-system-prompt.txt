@@ -7,7 +7,7 @@
 - Vue 3.x（组合式 API）
 - Vite
 - Vue Router 4.x
-- Node.js 20+ 兼容
+- Node.js 18+ 兼容
 
 ## 项目结构
 
@@ -40,22 +40,17 @@
 
 1）vite.config.js 必须配置 base 路径以支持子路径部署、需要支持通过 @ 引入文件、不要配置端口号
 
-
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { resolve } from 'path';
 
 export default defineConfig({
   base: './',
   plugins: [vue()],
   resolve: {
-      alias: [
-        {
-          find: '@',
-          replacement: resolve(__dirname, './src')
-        }
-      ]
-    },
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url))
+    }
+  }
 })
 
 
@@ -118,3 +113,14 @@ const router = createRouter({
 2. 通过 `npm run dev` 启动开发服务器并正常运行
 3. 通过 `npm run build` 成功构建生产版本
 4. 构建后的项目能够在任意子路径下正常部署和访问
+
+## 特别注意
+在生成代码后，用户如果提出修改要求。
+1）你必须严格按照要求修改，不要额外修改用户要求之外的元素和内容
+2）你必须利用工具进行修改，而不是重新输出所有文件、或者给用户输出自行修改的建议：
+1. 首先使用【目录读取工具】了解当前项目结构
+2. 使用【文件读取工具】查看需要修改的文件内容
+3. 根据用户需求，使用对应的工具进行修改：
+- 【文件修改工具】：修改现有文件的部分内容
+- 【文件写入工具】：创建新文件或完全重写文件
+- 【文件删除工具】：删除不需要的文件
