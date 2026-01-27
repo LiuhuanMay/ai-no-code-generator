@@ -3,7 +3,6 @@ package com.liuhuan.backend.ai;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.liuhuan.backend.ai.model.enums.CodeGenTypeEnum;
-import com.liuhuan.backend.ai.tools.FileWriteTool;
 import com.liuhuan.backend.ai.tools.ToolManager;
 import com.liuhuan.backend.common.ErrorCode;
 import com.liuhuan.backend.exception.BusinessException;
@@ -11,11 +10,11 @@ import com.liuhuan.backend.service.ChatHistoryService;
 import dev.langchain4j.community.store.memory.chat.redis.RedisChatMemoryStore;
 import dev.langchain4j.data.message.ToolExecutionResultMessage;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
-import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.service.AiServices;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -30,15 +29,15 @@ import java.time.Duration;
 @Slf4j
 public class AiCodeGeneratorServiceFactory {
 
-    private final ChatModel chatModel;
-
-    private final StreamingChatModel streamingChatModel;
 
     private final RedisChatMemoryStore redisChatMemoryStore;
 
     private final ChatHistoryService chatHistoryService;
 
     private final ToolManager toolManager;
+
+    private final ApplicationContext applicationContext;
+
 
 
     @Bean
@@ -98,6 +97,8 @@ public class AiCodeGeneratorServiceFactory {
                 .build();
         // 从数据库加载历史对话到记忆中
         chatHistoryService.loadChatHistoryToMemory(appId, chatMemory, 20);
+        // 使用多例模式的StreamingModel解决并发问题
+        StreamingChatModel streamingChatModel = applicationContext.getBean("streamingChatModelPrototype", StreamingChatModel.class);
         // 根据代码生成类型选择不同的模型配置
         return switch (codeGenType) {
             // Vue 项目生成使用推理模型
@@ -111,7 +112,6 @@ public class AiCodeGeneratorServiceFactory {
                     .build();
             // HTML 和多文件生成使用默认模型
             case HTML, MULTI_FILE -> AiServices.builder(AiCodeGeneratorService.class)
-                    .chatModel(chatModel)
                     .streamingChatModel(streamingChatModel)
                     .chatMemory(chatMemory)
                     .build();
