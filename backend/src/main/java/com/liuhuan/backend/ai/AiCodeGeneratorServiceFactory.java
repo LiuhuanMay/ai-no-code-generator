@@ -2,6 +2,7 @@ package com.liuhuan.backend.ai;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.liuhuan.backend.ai.guardrail.PromptSafetyInputGuardrail;
 import com.liuhuan.backend.ai.model.enums.CodeGenTypeEnum;
 import com.liuhuan.backend.ai.tools.ToolManager;
 import com.liuhuan.backend.common.ErrorCode;
@@ -93,10 +94,10 @@ public class AiCodeGeneratorServiceFactory {
                 .builder()
                 .id(appId)
                 .chatMemoryStore(redisChatMemoryStore)
-                .maxMessages(20)
+                .maxMessages(10)
                 .build();
         // 从数据库加载历史对话到记忆中
-        chatHistoryService.loadChatHistoryToMemory(appId, chatMemory, 20);
+        chatHistoryService.loadChatHistoryToMemory(appId, chatMemory, 10);
         // 使用多例模式的StreamingModel解决并发问题
         StreamingChatModel streamingChatModel = applicationContext.getBean("streamingChatModelPrototype", StreamingChatModel.class);
         // 根据代码生成类型选择不同的模型配置
@@ -109,11 +110,13 @@ public class AiCodeGeneratorServiceFactory {
                     .hallucinatedToolNameStrategy(toolExecutionRequest -> ToolExecutionResultMessage.from(
                             toolExecutionRequest, "Error: there is no tool called " + toolExecutionRequest.name()
                     ))
+                    .inputGuardrails(new PromptSafetyInputGuardrail()) // 添加输入护轨
                     .build();
             // HTML 和多文件生成使用默认模型
             case HTML, MULTI_FILE -> AiServices.builder(AiCodeGeneratorService.class)
                     .streamingChatModel(streamingChatModel)
                     .chatMemory(chatMemory)
+                    .inputGuardrails(new PromptSafetyInputGuardrail()) // 添加输入护轨
                     .build();
             default -> throw new BusinessException(ErrorCode.SYSTEM_ERROR,
                     "不支持的代码生成类型: " + codeGenType.getValue());

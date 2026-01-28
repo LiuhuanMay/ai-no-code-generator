@@ -83,7 +83,13 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
         // 应用名称暂时为 initPrompt 前 12 位
         app.setAppName(initPrompt.substring(0, Math.min(initPrompt.length(), 12)));
         // 使用AI智能选择代码生成类型
-        CodeGenTypeEnum codeGenTypeEnum = aiCodeGenTypeRoutingService.routeCodeGenType(initPrompt);
+        CodeGenTypeEnum codeGenTypeEnum = null;
+        try {
+            codeGenTypeEnum = aiCodeGenTypeRoutingService.routeCodeGenType(initPrompt);
+        } catch (Exception e) {
+            log.error("AI 解析失败，Prompt：{}", e);
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请提供你的网站需求描述");
+        }
         app.setCodeGenType(codeGenTypeEnum.getValue());
         // 插入数据库
         boolean result = this.save(app);
