@@ -23,6 +23,8 @@ import com.liuhuan.backend.model.entity.User;
 import com.liuhuan.backend.model.enums.ChatHistoryMessageTypeEnum;
 import com.liuhuan.backend.model.vo.AppVO;
 import com.liuhuan.backend.model.vo.UserVO;
+import com.liuhuan.backend.monitor.MonitorContext;
+import com.liuhuan.backend.monitor.MonitorContextHolder;
 import com.liuhuan.backend.service.ChatHistoryService;
 import com.liuhuan.backend.service.ScreenshotService;
 import com.liuhuan.backend.service.UserService;
@@ -115,12 +117,24 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
         if (codeGenTypeEnum == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "应用代码生成类型错误");
         }
-        // 5. 在调用 AI 前，先保存用户消息到数据库中
+        // 5. 通过校验后，添加用户消息到对话历史
         chatHistoryService.addChatMessage(appId, message, ChatHistoryMessageTypeEnum.USER.getValue(), loginUser.getId());
-        // 6. 调用 AI 生成代码（流式）
-        Flux<String> contentFlux = aiCodeGeneratorFacade.generateAndSaveCodeStream(message, codeGenTypeEnum, appId);
-        // 7. 收集 AI 响应的内容，并且在完成后保存记录到对话历史
-       return streamHandlerExecutor.doExecute(contentFlux,chatHistoryService,appId,loginUser,codeGenTypeEnum);
+        // 6. 设置监控上下文
+        MonitorContextHolder.setContext(
+                MonitorContext.builder()
+                        .userId(loginUser.getId().toString())
+                        .appId(appId.toString())
+                        .build()
+        );
+        // 7. 调用 AI 生成代码（流式）
+        Flux<String> codeStream = aiCodeGeneratorFacade.generateAndSaveCodeStream(message, codeGenTypeEnum, appId);
+        // 8. 收集 AI 响应内容并在完成后记录到对话历史
+        return streamHandlerExecutor.doExecute(codeStream, chatHistoryService, appId, loginUser, codeGenTypeEnum)
+                .doFinally(signalType -> {
+                    // 流结束时清理（无论成功/失败/取消）
+                    MonitorContextHolder.clearContext();
+                });
+
     }
 
     @Override
