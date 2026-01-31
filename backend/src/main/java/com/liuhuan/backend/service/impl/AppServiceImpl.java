@@ -6,11 +6,9 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.liuhuan.backend.ai.AiCodeGenTypeRoutingService;
-import com.liuhuan.backend.ai.AiCodeGenTypeRoutingServiceFactory;
 import com.liuhuan.backend.ai.model.enums.CodeGenTypeEnum;
 import com.liuhuan.backend.builder.VueProjectBuilder;
 import com.liuhuan.backend.common.ErrorCode;
-import com.liuhuan.backend.common.ResultUtils;
 import com.liuhuan.backend.constant.AppConstant;
 import com.liuhuan.backend.core.AiCodeGeneratorFacade;
 import com.liuhuan.backend.core.handler.StreamHandlerExecutor;
@@ -19,22 +17,22 @@ import com.liuhuan.backend.exception.ThrowUtils;
 import com.liuhuan.backend.mapper.AppMapper;
 import com.liuhuan.backend.model.dto.app.AppAddRequest;
 import com.liuhuan.backend.model.dto.app.AppQueryRequest;
+import com.liuhuan.backend.model.entity.App;
 import com.liuhuan.backend.model.entity.User;
 import com.liuhuan.backend.model.enums.ChatHistoryMessageTypeEnum;
 import com.liuhuan.backend.model.vo.AppVO;
 import com.liuhuan.backend.model.vo.UserVO;
 import com.liuhuan.backend.monitor.MonitorContext;
 import com.liuhuan.backend.monitor.MonitorContextHolder;
+import com.liuhuan.backend.service.AppService;
 import com.liuhuan.backend.service.ChatHistoryService;
 import com.liuhuan.backend.service.ScreenshotService;
 import com.liuhuan.backend.service.UserService;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
-import com.liuhuan.backend.model.entity.App;
-import com.liuhuan.backend.service.AppService;
-import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
@@ -72,6 +70,11 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
     private final ScreenshotService screenshotService;
 
     private final AiCodeGenTypeRoutingService aiCodeGenTypeRoutingService;
+
+    @Value("${code.deploy-host:http://localhost}")
+    private String deployHost;
+
+
 
     @Override
     public Long createApp(AppAddRequest appAddRequest, User loginUser) {
@@ -254,7 +257,7 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
         boolean updateResult = this.updateById(updateApp);
         ThrowUtils.throwIf(!updateResult, ErrorCode.OPERATION_ERROR, "更新应用部署信息失败");
         // 10. 构建应用访问url
-        String appDeployUrl = String.format("%s/%s", AppConstant.CODE_DEPLOY_HOST, deployKey);
+        String appDeployUrl = String.format("%s/%s", deployHost, deployKey);
         // 11 . 异步生成截图并更新应用封面
         generateAppScreenshotAsync(appId, appDeployUrl);
         return appDeployUrl;
