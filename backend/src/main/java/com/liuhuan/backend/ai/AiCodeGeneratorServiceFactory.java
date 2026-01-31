@@ -94,10 +94,10 @@ public class AiCodeGeneratorServiceFactory {
                 .builder()
                 .id(appId)
                 .chatMemoryStore(redisChatMemoryStore)
-                .maxMessages(10)
+                .maxMessages(20)
                 .build();
         // 从数据库加载历史对话到记忆中
-        chatHistoryService.loadChatHistoryToMemory(appId, chatMemory, 10);
+        chatHistoryService.loadChatHistoryToMemory(appId, chatMemory, 20);
         // 使用多例模式的StreamingModel解决并发问题
         StreamingChatModel streamingChatModel = applicationContext.getBean("streamingChatModelPrototype", StreamingChatModel.class);
         // 根据代码生成类型选择不同的模型配置

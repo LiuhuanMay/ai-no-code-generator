@@ -4,6 +4,8 @@ import com.liuhuan.backend.common.ErrorCode;
 import com.liuhuan.backend.exception.BusinessException;
 import com.liuhuan.backend.model.entity.User;
 import com.liuhuan.backend.ratelimiter.annotation.RateLimit;
+import com.liuhuan.backend.ratelimiter.config.RateLimitDefaultProperties;
+import com.liuhuan.backend.ratelimiter.enums.RateLimitType;
 import com.liuhuan.backend.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,17 +40,23 @@ public class RateLimitAspect {
 
     private final UserService userService;
 
+    private final RateLimitDefaultProperties rateLimitDefaultProperties;
+
     @Before("@annotation(rateLimit)")
     public void doBefore(JoinPoint point, RateLimit rateLimit) {
         String key = generateRateLimitKey(point, rateLimit);
         // 使用Redisson的分布式限流器
         RRateLimiter rateLimiter = redissonClient.getRateLimiter(key);
         rateLimiter.expire(Duration.ofHours(1)); // 1 小时后过期
-        // 设置限流器参数：每个时间窗口允许的请求数和时间窗口
-        rateLimiter.trySetRate(RateType.OVERALL, 5, 1, RateIntervalUnit.MINUTES);
+        // 优先使用注解参数，若无则使用配置文件默认值
+        int finalRate = rateLimit.rate() > 0 ? rateLimit.rate() : rateLimitDefaultProperties.getRate();
+        int finalRateInterval = rateLimit.rateInterval() > 0 ? rateLimit.rateInterval() : rateLimitDefaultProperties.getRateInterval();
+        String finalMessage = rateLimit.message().isEmpty() ? rateLimitDefaultProperties.getMessage() : rateLimit.message();
+
+        rateLimiter.trySetRate(RateType.OVERALL, finalRate, finalRateInterval, RateIntervalUnit.MINUTES);
         // 尝试获取令牌，如果获取失败则限流
         if (!rateLimiter.tryAcquire(1)) {
-            throw new BusinessException(ErrorCode.TOO_MANY_REQUEST, rateLimit.message());
+            throw new BusinessException(ErrorCode.TOO_MANY_REQUEST, finalMessage);
         }
     }
 
