@@ -67,7 +67,7 @@ public class AiModelMonitorListener implements ChatModelListener {
     @Override
     public void onError(ChatModelErrorContext errorContext) {
         // 从监控上下文中获取信息
-        MonitorContext context = MonitorContextHolder.getContext();
+        MonitorContext context  = (MonitorContext) errorContext.attributes().get(MONITOR_CONTEXT_KEY);
         String userId = context.getUserId();
         String appId = context.getAppId();
         // 获取模型名称和错误类型
